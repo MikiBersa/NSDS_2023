@@ -29,6 +29,7 @@ public class BasicConsumerManual {
         final Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, serverAddr);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
+        // VADO A GESTIRLO MANUALMENTE
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, String.valueOf(autoCommit));
 
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, offsetResetStrategy);
@@ -54,6 +55,18 @@ public class BasicConsumerManual {
                     // It is also possible to commit for individual partitions
                     // Asynchronous versions with callback functions also available
                     consumer.commitSync();
+
+                    /*
+                    Quando un consumatore Kafka legge un messaggio da un topic, può mantenere internamente un offset,
+                    che è una posizione specifica in una partizione del topic. Questo offset indica fino a quale
+                    punto il consumatore ha letto i messaggi. Dopo aver elaborato un insieme di messaggi, il
+                    consumatore può fare commit dell'offset, segnalando a Kafka che quei messaggi sono stati processati con successo.
+
+                     Il commit dell'offset è cruciale per garantire l'affidabilità nel processo di consumo dei messaggi.
+                     Se un consumatore non fa commit degli offset, Kafka non sa fino a quale punto il consumatore ha letto i messaggi.
+                     In caso di un'interruzione o un riavvio, il consumatore potrebbe iniziare a leggere nuovamente i messaggi già processati,
+                     portando a duplicati o perdita di dati.
+                     */
                 }
             }
         }

@@ -33,9 +33,12 @@ public class TransactionalConsumer {
         final Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, serverAddr);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
+
+        // DEFINISCO SE LEGGERE I MESSAGGI CHE SONO STATI COMMITTATI O NO
         if (readUncommitted) {
             props.put(ConsumerConfig.ISOLATION_LEVEL_CONFIG, "read_uncommitted");
         } else {
+            // IN QUESTO CASO ANDRà A LEGGERE SOLO I MESSAGGI COMMITTATI -> ANDARà A LEGGERE SOLO I MESSAGGI PARI
             props.put(ConsumerConfig.ISOLATION_LEVEL_CONFIG, "read_committed");
         }
 
