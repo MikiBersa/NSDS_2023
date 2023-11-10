@@ -13,11 +13,15 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 public class AtomicForwarder {
+    // è UN CONSUMATORE ED UTILIZZATORE ALLO STESSO TEMPO
+    // se crashia riparte da dove ha lasciato
     private static final String defaultConsumerGroupId = "groupA";
     private static final String defaultInputTopic = "topicA";
     private static final String defaultOutputTopic = "topicB";
 
     private static final String serverAddr = "localhost:9092";
+
+    // transaction per commit l'offset del messaggio letto da topicA e push di TopicB come parte della transazione
     private static final String producerTransactionalId = "forwarderTransactionalId";
 
     public static void main(String[] args) {
@@ -74,6 +78,8 @@ public class AtomicForwarder {
 
             producer.sendOffsetsToTransaction(map, consumer.groupMetadata());
             producer.commitTransaction();
+
+            // GARANTISCE END TO END SEMANTIC COMUNICATION
         }
     }
 }
