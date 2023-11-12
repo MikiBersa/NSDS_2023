@@ -3,9 +3,12 @@ package it.polimi.middleware.kafka.atomic_forward;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.StringSerializer;
 
 import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 public class IdempotentProducer {
     private static final String defaultTopic = "topicA";
@@ -45,7 +48,18 @@ public class IdempotentProducer {
             );
 
             final ProducerRecord<String, String> record = new ProducerRecord<>(topic, key, value);
-            producer.send(record);
+
+            // ritorna il Future che contiene metadata dove è stato memorizzato il messaggio partition e offset
+            final Future<RecordMetadata> future = producer.send(record);
+            // DI DEFAULT ASPETTO ACK
+
+            try {
+                RecordMetadata ack = future.get();
+                System.out.println("Ack for topic " + ack.topic() + ", partition " + ack.partition() + ", offset " + ack.offset());
+            } catch (InterruptedException | ExecutionException e1) {
+                e1.printStackTrace();
+            }
+
 
             try {
                 Thread.sleep(waitBetweenMsgs);

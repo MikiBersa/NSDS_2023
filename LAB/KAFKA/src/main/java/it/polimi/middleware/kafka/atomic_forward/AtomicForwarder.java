@@ -4,6 +4,7 @@ import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -11,6 +12,8 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 public class AtomicForwarder {
     // è UN CONSUMATORE ED UTILIZZATORE ALLO STESSO TEMPO
@@ -57,7 +60,10 @@ public class AtomicForwarder {
         producer.initTransactions();
 
         while (true) {
+            // QUI GLI ARRIVA PIù MESSAGGI DI SEGUITO QUANDO IL PRODUCER INVIA PIù MESSAGGI UNO DIESTRO L'ALTRO NEL PROCESSO
             final ConsumerRecords<String, String> records = consumer.poll(Duration.of(5, ChronoUnit.MINUTES));
+            ProducerRecord<String, String> recordR = null;
+
             producer.beginTransaction();
             for (final ConsumerRecord<String, String> record : records) {
                 System.out.println("Partition: " + record.partition() +
@@ -65,16 +71,29 @@ public class AtomicForwarder {
                         "\tKey: " + record.key() +
                         "\tValue: " + record.value()
                 );
-                producer.send(new ProducerRecord<>(outputTopic, record.key(), record.value()));
+                recordR = new ProducerRecord<>(outputTopic, record.key(), record.value());
+                producer.send(recordR);
             }
 
             // The producer manually commits the offsets for the consumer within the transaction
             final Map<TopicPartition, OffsetAndMetadata> map = new HashMap<>();
+            System.out.println(records);
             for (final TopicPartition partition : records.partitions()) {
+                System.out.println(partition);
                 final List<ConsumerRecord<String, String>> partitionRecords = records.records(partition);
+                System.out.println(partitionRecords + " " + partitionRecords.size());
                 final long lastOffset = partitionRecords.get(partitionRecords.size() - 1).offset();
+                System.out.println(lastOffset);
+                // AGGIUNGO UNO COSì QUANDO IL CONSUMER RI PARTE -> VA A LEGGERE DIRETTAMENTE IL NUOVO VALORE
+                // INFATTI QUANDO RIFACCIO RIPARTIRE QUESTO PROCESSO STA IN ASCOLTO E NON CARICA I MESSAGGI PRECEDENTI PERCHè IL SUO OFFSET è QUELLO NUOVO DEL MESSAGGIO CHE DEVE ARRIVARE
+                // INFATTI NON DOVREBBE PROCESSARE MESSAGGI VECCHI PER LA POLITICA  EOS => QUINDI LI PROCESSA UNA SOLA VOLTA QUANDO ARRIVA E PER QUESTO QUANDO IL PROCESSO
+                // RESUSCITA ALLORA STA IN ASCOLTO E NN RIPROCESSA I MESSAGGI INDIETRO
+                // QUESTO FATTO DI ESSERE IN ASCOLTO DEL NUOVO MESSAGGIO LO POSSO FARE SOLO CON lastOffset + 1
                 map.put(partition, new OffsetAndMetadata(lastOffset + 1));
+                System.out.println("INTERMEDIA: "+map);
             }
+
+            System.out.println("MAPPA: "+map);
 
             producer.sendOffsetsToTransaction(map, consumer.groupMetadata());
             producer.commitTransaction();
