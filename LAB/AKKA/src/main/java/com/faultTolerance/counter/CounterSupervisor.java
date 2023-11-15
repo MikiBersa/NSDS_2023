@@ -14,7 +14,7 @@ public class CounterSupervisor {
 	public static final int NORMAL_OP = 0;
 	public static final int FAULT_OP = -1;
 
-	public static final int FAULTS = 1;
+	public static final int FAULTS = 3;
 
 	public static void main(String[] args) {
 		scala.concurrent.duration.Duration timeout = scala.concurrent.duration.Duration.create(5, SECONDS);

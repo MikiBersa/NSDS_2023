@@ -14,6 +14,8 @@ public class CounterSupervisorActor extends AbstractActor {
         new OneForOneStrategy(
             1, // Max no of retries
             Duration.ofMinutes(1), // Within what time period
+				// SupervisorStrategy.resume() -> PROCESSO IN FUALT VIENE RIATTIVATO LO STESSO COSì PARTE DAL SUO STESSO STATO
+				// SupervisorStrategy.stop() -> IN QUESTO CASO NON CREARE NESSUN ALTRO ACTOR E QUINDI I MESSAGGI DOPO NON SONO GESTITI
             DeciderBuilder.match(Exception.class, e -> SupervisorStrategy.restart())
                 .build());
 

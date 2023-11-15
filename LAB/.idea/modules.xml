@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/AKKA/AkkaNSDS.iml" filepath="$PROJECT_DIR$/AKKA/AkkaNSDS.iml" />
+      <module fileurl="file://$PROJECT_DIR$/KAFKA/tutorial.iml" filepath="$PROJECT_DIR$/KAFKA/tutorial.iml" />
+    </modules>
+  </component>
+</project>

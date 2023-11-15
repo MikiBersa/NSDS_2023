@@ -2,6 +2,7 @@ package com.faultTolerance.counter;
 
 public class DataMessage {
 
+	// MODO PER VEDERE SIMULARE DIVERSI COMPORTAMENTI
 	private int code;
 	
 	public int getCode() {

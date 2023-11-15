@@ -7,6 +7,7 @@ import java.util.concurrent.Executors;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 
+//OGNI PROGETTO VUOLE SOLO UN FILE POM.XML
 public class Counter {
 
 	private static final int numThreads = 10;
@@ -23,6 +24,9 @@ public class Counter {
 		for (int i = 0; i < numMessages; i++) {
 			// CON ActorRef.noSender() -> DEFINIAMO UN MESSAGGIO ANONIMO
 			exec.submit(() -> counter.tell(new SimpleMessage(), ActorRef.noSender()));
+			// POSSO CREARE UN MIO MESSAGGIO PERSONALIZZATO TRAMITE LA CREAZIONE DELLA SUA CLASSE
+			// SE NON GESTITO DALL'ACTOR ALLORA SCRIVE UNHANDLED PERCHè NON C'è IL MATCH
+			exec.submit(() -> counter.tell(new OtherMessage(), ActorRef.noSender()));
 		}
 		
 		// Wait for all messages to be sent and received

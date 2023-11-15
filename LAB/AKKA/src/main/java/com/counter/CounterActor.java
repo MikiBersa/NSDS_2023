@@ -13,12 +13,18 @@ public class CounterActor extends AbstractActor {
 
 	@Override
 	public Receive createReceive() {
-		return receiveBuilder().match(SimpleMessage.class, this::onMessage).build();
+		// COSTRUZIONE DEL MATCH
+		return receiveBuilder().match(SimpleMessage.class, this::onMessage).
+				match(OtherMessage.class, this::onOtherMessage).build();
 	}
 
 	void onMessage(SimpleMessage msg) {
 		++counter;
 		System.out.println("Counter increased to " + counter);
+	}
+
+	void onOtherMessage(OtherMessage msg){
+		System.out.println("Received other type of message!");
 	}
 
 	static Props props() {
