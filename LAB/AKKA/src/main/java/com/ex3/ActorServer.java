@@ -14,7 +14,9 @@ public class ActorServer extends AbstractActor {
     }
     void onGetmsg(Getmsg p){
         // System.out.println("Email of: "+p.getName()+" is :"+emailstorage.get(p.getName()));
-         sender().tell(emailstorage.get(p.getName()),self());
+        // QUI IDEALE SAREBBE, MEGLIO METTERE I MESSAGGI DI RITORNO -> CREANDO UNA CLASSE DEDICATA
+        ReplyMsg replyMsg = new ReplyMsg(emailstorage.get(p.getName()));
+        sender().tell(replyMsg,self());
     }
 
     void onPutmsg(Putmsg p){

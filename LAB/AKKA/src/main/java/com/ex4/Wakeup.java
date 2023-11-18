@@ -1,5 +1,5 @@
 package com.ex4;
 
-public class Wakeup {
+public class Wakeup extends Msg {
 
 }

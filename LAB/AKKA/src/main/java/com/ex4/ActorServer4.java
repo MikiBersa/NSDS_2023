@@ -8,53 +8,45 @@ import com.ex3.ActorServer;
 import java.util.ArrayList;
 
 public class ActorServer4 extends AbstractActorWithStash {
-    boolean sleep;
     @Override
-    /*public Receive createReceive() {
-        return receiveBuilder().match(GenericStringMex.class,this::onStringReceived).build();
-    }
-
-    void onStringReceived(GenericStringMex s){
-        if(sleep){
-            stash();
-        }
-        else{
-            unstash();
-            sender().tell(s.getS(),self());
-        }
-    }
-*/
     public Receive createReceive() {
-        return wakeup();
+        return awake();
     }
 
-    private final Receive wakeup() {
-        return receiveBuilder().match(GenericStringMex.class,this::onStringReceived).match(Sleep.class,this::onSleep).build();
+    private final Receive awake() {
+        return receiveBuilder().match(TextMsg.class, this::echo).match(Sleep.class, this::goToSleep).build();
     }
 
-    void onWakeup(Wakeup p) {
-        getContext().become(wakeup());
-        unstashAll();
+    private final Receive sleepy() {
+        return receiveBuilder().match(TextMsg.class, this::putAside).match(Wakeup.class, this::wakeup).build();
     }
 
-    private final Receive sleep() {
-        return receiveBuilder().match(GenericStringMex.class,this::onStringReceivedSleep).match(Wakeup.class,this::onWakeup).build();
+    // Processing messages
+    void echo(TextMsg msg) {
+        System.out.println("SERVER: Echo-ing back msg to "+msg.getSender()+" with text: "+msg.getText());
+        msg.getSender().tell(msg, self());
+        // FUNZIONA ANCHE CON sender().tell(msg, self());
     }
 
-    void onSleep(Sleep p) {
-        getContext().become(sleep());
-    }
-
-    void onStringReceivedSleep(GenericStringMex p){
+    void putAside(TextMsg msg) {
+        System.out.println("SERVER: Setting aside msg...");
+        // ONGI VOLTA CHE RICEVO UN MESSAGGIO LO METTO IN STASH
         stash();
     }
 
-    void onStringReceived(GenericStringMex p) {
-        sender().tell(p.getS(),self());
+    // Changes of behavior
+    void goToSleep (Sleep msg) {
+        System.out.println("SERVER: Going to sleep... ");
+        getContext().become(sleepy());
     }
 
+    void wakeup (Wakeup msg) {
+        System.out.println("SERVER: Waking up!");
+        getContext().become(awake());
+        unstashAll();
+    }
 
-    public static Props props() {
+    static Props props() {
         return Props.create(ActorServer4.class);
     }
 }

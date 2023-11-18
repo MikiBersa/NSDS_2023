@@ -21,14 +21,26 @@ public class Counter {
         final ActorRef server = sys.actorOf(ActorServer4.props(), "server");
         final ActorRef client = sys.actorOf(ActorClient4.props(), "client");
 
+        // Tell the client who is the server
         client.tell(new StartConnection(server), ActorRef.noSender());
 
+        // An example execution
+        client.tell(new TextMsg("Hello Luca!", ActorRef.noSender()), ActorRef.noSender());
+        client.tell(new TextMsg("Hello Alessandro!", ActorRef.noSender()), ActorRef.noSender());
+
+        client.tell(new Sleep(), ActorRef.noSender());
+
+        client.tell(new TextMsg("You should be sleeping now 1!", ActorRef.noSender()), ActorRef.noSender());
+        client.tell(new TextMsg("You should be sleeping now 2!", ActorRef.noSender()), ActorRef.noSender());
+
+        client.tell(new Wakeup(), ActorRef.noSender());
+
+        // Wait for messages to eventually arrive
         try {
             System.in.read();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         sys.terminate();
     }
 }
