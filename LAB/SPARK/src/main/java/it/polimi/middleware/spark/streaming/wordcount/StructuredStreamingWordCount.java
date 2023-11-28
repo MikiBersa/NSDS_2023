@@ -17,6 +17,8 @@ public class StructuredStreamingWordCount {
         final String socketHost = args.length > 1 ? args[1] : "localhost";
         final int socketPort = args.length > 2 ? Integer.parseInt(args[2]) : 9999;
 
+        // UTILIZZIAMO IL TUTTO COME UNA TABELLA -> CEH SI AGGIORNA
+        // CONTIAMO / GESTIAMO COME SE FOSSE UNA TABELLA CON INFINITE RIGHE
         final SparkSession spark = SparkSession
                 .builder()
                 .master(master)
@@ -40,6 +42,10 @@ public class StructuredStreamingWordCount {
                 .flatMap((FlatMapFunction<String, String>) x -> Arrays.asList(x.split(" ")).iterator(), Encoders.STRING());
 
         // Generate running word count
+        // IN QUESTO CASO OGNI RIGA HA SOLO UNA COLONNA  CHE è LA PAROLA
+        // RAGGRUPPO NELLA TABELLA INFINITA LE PAROLA CHE HANNO LO STESSA PAROLA E CI FACCIO IL CONTEGGIO
+        // IN USCITA MI FA VEDERE SOLO IL VALORE CHE è STATO MODIFICATO
+        // IN QUESTO CASO SICCOME è UN COUNT ALLORA CONSIDERO SOLO IL VALORE NUOVO UPDATE
         final Dataset<Row> wordCounts = words.groupBy("value").count();
 
         // Start running the query that prints the running counts to the console
@@ -48,9 +54,11 @@ public class StructuredStreamingWordCount {
         // 2. Append: outputs only the new rows appended to the result table.
         // It is applicable only when existing rows are not expected to change (so, not in this case).
         // 3. Update: outputs only the rows that were updated since the last trigger.
+        // QUESTO SARà IL MIO OUTPUT
         final StreamingQuery query = wordCounts
                 .writeStream()
-                .outputMode("update")
+                // IN QUESTO CASO VIENE FATTO UN COUNT UPDATE -> SI AGGIORNA NEL TEMPO
+                .outputMode("complete")
                 .format("console")
                 .start();
 

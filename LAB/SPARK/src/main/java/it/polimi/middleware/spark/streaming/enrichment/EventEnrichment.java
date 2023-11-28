@@ -22,6 +22,8 @@ import java.util.concurrent.TimeoutException;
  * need to integrate static knowledge (product classification) and streaming data
  * (occurrences of products in the stream).
  */
+
+// IN QUESTO CASO POSSO UNIRE EVENTI DINAMICI E STATICI IN QUANTO IL TUTTO ARRIVA NELLO STESSO FRAMEWORK SPARK
 public class EventEnrichment {
     public static void main(String[] args) throws TimeoutException {
         final String master = args.length > 0 ? args[0] : "local[4]";
@@ -51,6 +53,7 @@ public class EventEnrichment {
 
         Dataset<Row> inStreamDF = inStream.toDF("product");
 
+        // IN QUESTO CASO è UN STREAM DA UN FILE
         final Dataset<Row> productsClassification = spark
                 .read()
                 .option("header", "false")
@@ -65,3 +68,5 @@ public class EventEnrichment {
         spark.close();
     }
 }
+
+// LE SOLUZIONI STANNO NEL SOLUTIONS BRANCH
