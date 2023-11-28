@@ -29,6 +29,7 @@ public class InvestmentSimulator {
         // ESTRAPOLO QUELLO CHE C'è DENTRO ALLA RIGA IN TUPLE
         // <3, 0.01>
         JavaRDD<Tuple2<Double, Double>> investements = textFile.map(w ->{
+            // FACCIO COSì PERCHè SO COM'è LA STRUTTURA
            String[] values = w.split(" ");
            double amountOwned = Double.parseDouble(values[0]);
            double investmentRate = Double.parseDouble(values[1]);
@@ -68,12 +69,14 @@ public class InvestmentSimulator {
 
     private static double sumAmount(JavaRDD<Tuple2<Double, Double>> investments){
         // in investments ho tutte le tuple del map di prima riga 42 o 31
-        return investments.
-                mapToDouble(a -> a._1)
+        return investments
+                // estraggo solo il primo valore della tupla perchè ci devo fare la somma
+                .mapToDouble(a -> a._1)
                 .sum();
         // faccio una riduzione della somma -> STARTS JOB INTO SPARK
         // java program aspetta il valore per proseguire per ogni reduce
     }
+
 
 
 }

@@ -1,10 +1,15 @@
 package it.polimi.middleware.spark.batch.bank;
 
+import static org.apache.spark.sql.functions.col;
 import static org.apache.spark.sql.functions.max;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import javassist.compiler.ast.Pair;
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.internal.config.R;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
@@ -84,11 +89,32 @@ public class Bank {
 
         // Q2. Person with the maximum total amount of withdrawals
 
-        // TODO
+
+        final Dataset<Row> max = sumWithdrawals
+                .agg(max("sum(amount)"))
+                .withColumnRenamed("max(sum(amount))", "sum(amount)")
+                .join(sumWithdrawals, "sum(amount)")
+                .select("person");
+
+        if(useCache){
+            max.cache();
+        }
+
+        max.show();
 
         // Q3 Accounts with negative balance
 
-        // TODO
+        final Dataset<Row> withdrawalsMod = withdrawals
+                .withColumnRenamed("account", "account_w");
+        // DEVO FARE LA SOTTRAZIONE
+        final Dataset<Row> aggregazione = deposits
+                .withColumnRenamed("amount", "base")
+                .join(withdrawalsMod, deposits.col("account").equalTo(withdrawalsMod.col("account_w")))
+                .withColumn("amount_difference", col("base").minus(col("amount")))
+                .filter(col("amount_difference").lt(0))
+                .select("account");
+
+        aggregazione.show();
 
         spark.close();
 
