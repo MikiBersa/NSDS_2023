@@ -1,4 +1,4 @@
-package com.lab.evaluation23;
+package com.EVAL;
 
 public class GenerateMsg {
 

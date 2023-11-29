@@ -27,6 +27,7 @@ public class StreamingWordCount {
                 // USATO GROUP ELEMENTS TOGHERS
                 // SIZE DI VISIONE, HOW FREQUENTLY DEVE ESSERE VALUTATA LA FINESTRA
                 // TIPO GESTIONE DELLO STATO PERCHè TIENE IN MEMORIA TUTTI GLI  ULTIMI DATI ENTRO I 10 SECONDI
+                // VISIONATI I DATI OGNI 5 SECONDI
                 .window(Durations.seconds(10), Durations.seconds(5))
                 .map(String::toLowerCase)
                 // HO STREAM OF WORDS

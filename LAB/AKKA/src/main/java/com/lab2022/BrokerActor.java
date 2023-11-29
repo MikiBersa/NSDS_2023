@@ -42,6 +42,7 @@ public class BrokerActor extends AbstractActorWithStash {
     }
 
     public BrokerActor() {
+        // NON BISOGNO DI FARE ASK PERCHè è GIà DENTRO ALLA CLASSE
         workerEven = getContext().actorOf(WorkerActor.props());
         workerOdd = getContext().actorOf(WorkerActor.props());
     }

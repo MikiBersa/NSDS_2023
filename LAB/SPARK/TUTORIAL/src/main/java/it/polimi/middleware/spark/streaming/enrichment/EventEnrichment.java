@@ -56,6 +56,8 @@ public class EventEnrichment {
         final Dataset<Row> inStream = spark
                 .readStream()
                 .format("socket")
+                // SE NON METTO IL RATE LO DECIDE LUI (SPARK) COME DEFAULT
+                // ANCHE IN BASE AL CARICO DI LAVORO / INPUT
                 .option("host", socketHost)
                 .option("port", socketPort)
                 .load();
@@ -65,10 +67,6 @@ public class EventEnrichment {
         // I DATI CHE RICEVO LI TRASFORMO IN UNA TABELLA CON UNA COLONNA RINOMINATA product
         Dataset<Row> inStreamDF = inStream.toDF("product");
 
-        final Dataset<String> ins = inStream
-                .as(Encoders.STRING())
-                .flatMap((FlatMapFunction<String, String>) x -> Arrays.asList(x.split(" ")).iterator(), Encoders.STRING());
-
         // IN QUESTO CASO è UN STREAM DA UN FILE
         final Dataset<Row> productsClassification = spark
                 .read()
@@ -77,11 +75,6 @@ public class EventEnrichment {
                 .schema(productClassificationSchema)
                 .csv(filePath + "files/enrichment/product_classification.csv");
 
-        // Query: count the number of products of each class in the stream
-
-        final Dataset<Row> conteggio_Statico = productsClassification
-                .groupBy(col("classification"))
-                .count();
 
         productsClassification.show();
 
@@ -97,7 +90,7 @@ public class EventEnrichment {
 
         final StreamingQuery query = queryT
                 .writeStream()
-                .outputMode("update")
+                .outputMode("complete")
                 .format("console")
                 .start();
 

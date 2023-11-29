@@ -27,6 +27,13 @@ public class WindowedCount {
         // It is used for testing and benchmarking.
         final Dataset<Row> inputRecords = spark
                 .readStream()
+                /*
+                La fonte "rate" è comunemente utilizzata per scopi di sviluppo e test.
+                Permette di generare dati sintetici in modo controllato impostando
+                un tasso di generazione specifico (rowsPerSecond).
+
+                che è diverso dal socket dove invece lì è utente che scrive
+                 */
                 .format("rate")
                 .option("rowsPerSecond", 10)
                 .load();

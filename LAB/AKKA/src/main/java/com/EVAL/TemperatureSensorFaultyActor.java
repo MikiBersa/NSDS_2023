@@ -1,4 +1,4 @@
-package com.lab.evaluation23;
+package com.EVAL;
 
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
@@ -11,8 +11,14 @@ public class TemperatureSensorFaultyActor extends TemperatureSensorActor {
 
 	@Override
 	public AbstractActor.Receive createReceive() {
-		return receiveBuilder().match(GenerateMsg.class, this::onGenerate)
+		return receiveBuilder()
+				.match(GenerateMsg.class, this::onGenerate)
+				.match(ConfigSensor.class, this::onConfig)
 				.build();
+	}
+
+	private void onConfig(ConfigSensor msg) {
+		dispatcher = msg.getDispatcher();
 	}
 
 	private void onGenerate(GenerateMsg msg) {

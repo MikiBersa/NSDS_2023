@@ -1,10 +1,10 @@
-package com.lab.evaluation23;
-
-import java.util.concurrent.ThreadLocalRandom;
+package com.EVAL;
 
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 public class TemperatureSensorActor extends AbstractActor {
 
@@ -13,14 +13,18 @@ public class TemperatureSensorActor extends AbstractActor {
 	private final static int MAX_TEMP = 50;
 
 	@Override
-	public AbstractActor.Receive createReceive() {
+	public Receive createReceive() {
 		return receiveBuilder()
 				.match(GenerateMsg.class, this::onGenerate)
+				.match(ConfigSensor.class, this::onConfig)
 				.build();
 	}
 
+	private void onConfig(ConfigSensor msg) {
+		dispatcher = msg.getDispatcher();
+	}
+
 	private void onGenerate(GenerateMsg msg) {
-		System.out.println("TEMPERATURE SENSOR: Sensing temperature!");
 		int temp = ThreadLocalRandom.current().nextInt(MIN_TEMP, MAX_TEMP + 1);
 		dispatcher.tell(new TemperatureMsg(temp,self()), self());
 	}
