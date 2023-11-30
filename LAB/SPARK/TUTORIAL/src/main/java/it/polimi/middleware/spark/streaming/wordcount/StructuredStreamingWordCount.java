@@ -48,6 +48,7 @@ public class StructuredStreamingWordCount {
         // IN QUESTO CASO SICCOME è UN COUNT ALLORA CONSIDERO SOLO IL VALORE NUOVO UPDATE
         final Dataset<Row> wordCounts = words.groupBy("value").count();
 
+
         // Start running the query that prints the running counts to the console
         // There are three types of output
         // 1. Complete: outputs the entire result table
