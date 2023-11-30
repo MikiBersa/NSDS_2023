@@ -33,6 +33,8 @@ public class WindowedCount {
                 un tasso di generazione specifico (rowsPerSecond).
 
                 che è diverso dal socket dove invece lì è utente che scrive
+
+                // RICORDO CHE IL RATE CREA UNA SUCCESSIONE DI DUE COLONNE => TIMESTAMP, VALUE
                  */
                 .format("rate")
                 .option("rowsPerSecond", 10)
@@ -48,6 +50,27 @@ public class WindowedCount {
 
         final StreamingQuery query = inputRecords
                 .groupBy(
+                        window(col("timestamp"), "30 seconds", "10 seconds")
+                )
+                // SOMMA TUTTI I VALORI CHE HANNO STESSO VALUE E CHE SONO DENTRO I 30 SECONDI DELLA FINESTRA
+                .count()
+                // SCRIVI I VALORI
+                .writeStream()
+                .outputMode("update")
+                .format("console")
+                .start();
+
+        /*
+        try {
+            query.awaitTermination();
+        } catch (final StreamingQueryException e) {
+            e.printStackTrace();
+        }*/
+
+        // Q2: group by window (size 30 seconds, slide 10 seconds) and value
+
+        final StreamingQuery queryQ2 = inputRecords
+                .groupBy(
                         window(col("timestamp"), "30 seconds", "10 seconds"),
                         col("value")
                 )
@@ -59,19 +82,34 @@ public class WindowedCount {
                 .format("console")
                 .start();
 
+        /*
         try {
-            query.awaitTermination();
+            queryQ2.awaitTermination();
         } catch (final StreamingQueryException e) {
             e.printStackTrace();
-        }
-
-        // Q2: group by window (size 30 seconds, slide 10 seconds) and value
-
-        // TODO
+        }*/
 
         // Q3: group only by value
 
-        // TODO
+        final StreamingQuery queryQ3 = inputRecords
+                .groupBy(
+                        col("value")
+                )
+                // SOMMA TUTTI I VALORI CHE HANNO STESSO VALUE E CHE SONO DENTRO I 30 SECONDI DELLA FINESTRA
+                .count()
+                // SCRIVI I VALORI
+                // in questo caso solo quelli aggiornati
+                .writeStream()
+                .outputMode("update")
+                .format("console")
+                .start();
+
+        try {
+            // MI FA COMUQUE VEDERE LA TABELLA CON I TIMESTAMP |window|value|count|
+            queryQ3.awaitTermination();
+        } catch (final StreamingQueryException e) {
+            e.printStackTrace();
+        }
 
         spark.close();
     }
