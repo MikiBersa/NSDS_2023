@@ -41,6 +41,10 @@ public class StructuredStreamingWordCount {
                 .as(Encoders.STRING())
                 .flatMap((FlatMapFunction<String, String>) x -> Arrays.asList(x.split(" ")).iterator(), Encoders.STRING());
 
+        // TODO QUI TRSFORMO DA UN DATA SET DI RIGHE -> STRINGHE (PER LEGGERE ANCHE  VALORI TIPO A A CON IN MESSO LO SPAZIO DA  DIVIDERE)
+        // TODO E POI IN SET DI  RIGHE PER GESTIRE LA TABELLA => RAPPRESENTAZIONE TABELLARE
+        // TODO BISOGNO COMUNQUE DI FARE UN'AGGREGAZIONE
+
         // Generate running word count
         // IN QUESTO CASO OGNI RIGA HA SOLO UNA COLONNA  CHE è LA PAROLA
         // RAGGRUPPO NELLA TABELLA INFINITA LE PAROLA CHE HANNO LO STESSA PAROLA E CI FACCIO IL CONTEGGIO
