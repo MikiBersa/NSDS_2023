@@ -46,7 +46,8 @@ public class StreamingWordCountWithState {
                 .mapToPair(word -> new Tuple2<>(word, 1))
                 // PATIAMO INITIAL STATE CON RDD VUOTO
                 // GLI DEVO PASSARE LA FUNZIONE CHE MODIFICA LO STATO ALL'INTERNO DEL MAP
-                // QUINDI OGNI VOLTA CHE RICEVO UN STREAMING DENTRO AI 1 SEC AGGIORNA LO STATO
+                // todo QUINDI OGNI VOLTA CHE RICEVO UN STREAMING DENTRO AI 1 SEC AGGIORNA LO STATO interno
+                // TODO CHE RAPPRESENTA LA SOMMA
                 .mapWithState(StateSpec.function(mapFunction).initialState(initialRDD));
 
         state.foreachRDD(rdd -> rdd

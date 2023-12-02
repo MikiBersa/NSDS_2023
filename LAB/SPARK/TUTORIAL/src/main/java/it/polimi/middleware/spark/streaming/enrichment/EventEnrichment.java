@@ -64,6 +64,7 @@ public class EventEnrichment {
 
         spark.sparkContext().setLogLevel("ERROR");
 
+        // TODO QUI USO I DATI INPUT COME TABELLE NON COME IN STRAMINGWORDCOUNT CHE CONTO I DATI IN ENTRATA NON COME TABELLE
         // I DATI CHE RICEVO LI TRASFORMO IN UNA TABELLA CON UNA COLONNA RINOMINATA product
         Dataset<Row> inStreamDF = inStream.toDF("product");
 

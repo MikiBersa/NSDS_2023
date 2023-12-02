@@ -30,7 +30,7 @@ public class StreamingWordCount {
                 // VISIONATI I DATI OGNI 5 SECONDI
                 .window(Durations.seconds(10), Durations.seconds(5))
                 .map(String::toLowerCase)
-                // HO STREAM OF WORDS
+                // TODO HO STREAM OF WORDS NON STRUTTURATO
                 .flatMap(line -> Arrays.asList(line.split(" ")).iterator())
                 // creo da 1
                 .mapToPair(s -> new Tuple2<>(s, 1))

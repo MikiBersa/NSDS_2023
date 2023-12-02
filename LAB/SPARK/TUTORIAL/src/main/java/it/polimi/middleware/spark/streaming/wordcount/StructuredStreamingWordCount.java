@@ -37,6 +37,8 @@ public class StructuredStreamingWordCount {
         // Split the lines into words
         // If your input dataset is not relational (as in this case, since we do not know the number of words/columns)
         // You can still translate a Dataframe (Dataset<Row>) into a normal Dataset (in this case Dataset<String>)
+
+        // TODO IDEA QUI è TRASFORMARE DA STREAMING A DATASET STRUTTURATO, in realtà lo è già così vedi Dataset<Row> riga 30
         final Dataset<String> words = lines
                 .as(Encoders.STRING())
                 .flatMap((FlatMapFunction<String, String>) x -> Arrays.asList(x.split(" ")).iterator(), Encoders.STRING());
