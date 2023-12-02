@@ -1,7 +1,9 @@
-package it.polimi.nsds.spark.lab.cities;
+package it.polimi.middleware.spark.cities;
 
 import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.sql.*;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.streaming.StreamingQuery;
 import org.apache.spark.sql.streaming.StreamingQueryException;
 import org.apache.spark.sql.types.DataTypes;
@@ -13,7 +15,6 @@ import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 import static org.apache.spark.sql.functions.*;
-import static org.apache.spark.sql.functions.col;
 
 public class Cities {
     public static void main(String[] args) throws TimeoutException {

@@ -1,4 +1,4 @@
-package it.polimi.nsds.spark.lab.friends;
+package it.polimi.middleware.spark.batch.iterative;
 
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
