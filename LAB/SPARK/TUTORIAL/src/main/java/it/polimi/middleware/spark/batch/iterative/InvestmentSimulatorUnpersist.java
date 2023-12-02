@@ -53,8 +53,7 @@ public class InvestmentSimulatorUnpersist {
             sum = sumAmount(investements);
 
             // DA NOTARE CHE DEVE ESSERE FATTO DOPO LA SUM -> SE NO NON CALCOLA IL NUOVO INVESTIMENTO
-            // DA SOSTITUIRE CON QUELLO VECCHIO
-            // DICIAMO CHE LA VERSIONE PRECEDENTE SI PUò TOGLIERE DALLA CACHE
+            // DICIAMO CHE LA VERSIONE PRECEDENTE SI PUò TOGLIERE DALLA CACHE CHE VIENE SOSTITUITA CON QUELLA NUOVA
             oldInvestments.unpersist();
             oldInvestments = investements;
         }

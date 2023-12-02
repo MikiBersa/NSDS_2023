@@ -1,8 +1,5 @@
 package it.polimi.middleware.spark.batch.bank;
 
-import static org.apache.spark.sql.functions.col;
-import static org.apache.spark.sql.functions.max;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,6 +13,8 @@ import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
+
+import static org.apache.spark.sql.functions.*;
 
 /**
  * Bank example
@@ -146,9 +145,33 @@ public class Bank {
 
         negativeAccounts.show();
 
-        // Q4 Accounts in descending order of balance
+        // Q3 Alternative approach
+        System.out.println("Accounts with negative balance (second approach)");
 
-        // TODO
+        Dataset<Row> totalOps = withdrawals
+                .withColumn("amount", col("amount").multiply(-1))
+                // UNIONE TRA LE TABELLE SEMPLIFICA MOLTO
+                .union(deposits);
+        // .union(deposits).distinct(); // per togliere i doppioni, perchè union da solo fa UNION ALL di SQL
+
+        Dataset<Row> accountBalances = totalOps
+                .groupBy("account")
+                .sum();
+
+        accountBalances.cache();
+
+        Dataset<Row> negativeAccounts2 = accountBalances
+                .filter(col("sum(amount)").lt(0));
+
+        negativeAccounts2.show();
+
+        // Q4 Accounts in descending order of balance
+        // Easy if we used the second approach for query Q3
+        System.out.println("Accounts in descending order of balance");
+
+        Dataset<Row> sortedAccountsBalances = accountBalances
+                .sort(desc("sum(amount)"));
+        sortedAccountsBalances.show();
 
         spark.close();
 

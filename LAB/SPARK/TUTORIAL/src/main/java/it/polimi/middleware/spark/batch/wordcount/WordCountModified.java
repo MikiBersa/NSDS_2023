@@ -39,12 +39,12 @@ public class WordCountModified {
         System.out.println(cont.collect());
 
         // Q3. Compute the average number of characters in each line
-        // POTREI FARE UN FILTER E TOGLIERE GLI SPAZI
-        final JavaRDD<String> init_char = lines.map(line -> line.replace(" ",""));
-        final JavaRDD<Integer> _char = init_char.map(l -> l.length());
-        Integer sum = _char.reduce((a,b) -> a +b);
-        Double avg = (double) (sum / lines.count());
-        System.out.println(avg);
+        Tuple2<Integer, Integer> q3 = lines
+                // mi tengo a sinistra la somma delle lunghezze e a destra il conteggio
+                .mapToPair(s -> new Tuple2<>(s.length(), 1))
+                .reduce((a, b) -> new Tuple2<>(a._1 + b._1, a._2 + b._2));
+        System.out.println("Results of query Q3");
+        System.out.println(((float) q3._1) / q3._2);
 
         sc.close();
     }
