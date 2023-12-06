@@ -31,6 +31,7 @@ int main(int argc, char** argv) {
     // FARE UNA SOLUZIONE SCHEMATICA E SEMPLICE
     if (my_rank == sender) {
       num_hops++;
+      // se c'è un sender dall'altra parte ci deve essere un receiver -> FACCIO IL CONTEGGIO DI PORTARLO AVANTI
       MPI_Send(&num_hops, 1, MPI_INT, receiver, 0, MPI_COMM_WORLD);
       printf("Process %d sent msg with num hops = %d\n", my_rank, num_hops);
     } else if (my_rank == receiver) {
