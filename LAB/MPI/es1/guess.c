@@ -47,9 +47,12 @@ int select_number() {
 }
 // Function used to communicate the selected number to the leader
 void send_num_to_leader(int num) {
+  /*
    MPI_Send(&num,
   1, MPI_INT, leader,
   0, MPI_COMM_WORLD);
+  */
+  MPI_Gather(&num, 1, MPI_INT, selected_numbers, 1, MPI_INT, leader, MPI_COMM_WORLD);
 }
 // Compute the winner (-1 if there is no winner)
 // Function invoked by the leader only
@@ -58,26 +61,28 @@ int compute_winner(int number_to_guess) {
   int min  = 3000;
   int pos_winner  = -1;
 
-  for(int i = 1;  i < num_procs; i++){
+
+  for(int i = 0;  i < num_procs; i++){
+    /*
     int num_pos = 0;
     // SAREBBE MEGLIO IL PROB PERCHè COSì NON DEVO ASPETTARE CHE IL PROCESSO SIA PRNTO AD INVIARE
     // MEGLIO GHATER
     MPI_Recv(&num_pos,
     1, MPI_INT, i,
     0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-    selected_numbers[i
-    ] = abs(number_to_guess - num_pos);
+    */
+    if(i == leader) continue;
+
+    selected_numbers[i] = abs(number_to_guess - selected_numbers[i]);
   }
 
-  for(int i =1 ; i < num_procs;i++){
 
-    if(prec == selected_numbers[i
-    ]) return -1;
+  for(int i = 0 ; i < num_procs;i++){
+    if(i == leader) continue;
+    if(prec == selected_numbers[i]) return -1;
 
-    if(selected_numbers[i
-    ] < min){
-      min = selected_numbers[i
-      ];
+    if(selected_numbers[i] < min){
+      min = selected_numbers[i];
       pos_winner = i;
     }
 
@@ -138,6 +143,7 @@ int main(int argc, char** argv) {
 
     if(winner != -1){
       send_winner(&winner);
+      // ce l'ho il winner in winner
       update_leader(winner);
     }
 
